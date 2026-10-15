@@ -58,7 +58,7 @@ Before deploying, edit `client/vercel.json` and replace `https://your-api.onrend
   ]}]
 }
 ```
-In Vercel, import this repository and set **Root Directory** to `client` (leave “Include files outside the root directory” off), **Framework Preset** to Vite, **Build Command** to `npm run build`, and **Output Directory** to `dist`. No frontend environment variables are required: API requests use the same-origin `/api` rewrite. Deploy after the API is live and the rewrite destination is updated.
+In Vercel, import this repository and set **Root Directory** to `client` (leave “Include files outside the root directory” off). The client `vercel.json` pins install to `npm ci`, build to `npm run build`, and output to `dist`. No frontend environment variables are required: API requests use the same-origin `/api` rewrite. Deploy after the API is live and the rewrite destination is updated.
 `'wasm-unsafe-eval'` is needed for Argon2id (WebAssembly). `Referrer-Policy: no-referrer` keeps share URLs out of referrers (the `#k=` fragment is never sent anyway).
 
 After deployment, open `https://<your-app>.vercel.app/api/v1/health`; it should return the API health JSON through the rewrite. Then load the app and check browser developer tools for failed API requests. Keep the Vercel origin in the API's `CLIENT_ORIGIN` value (including `https://`).
