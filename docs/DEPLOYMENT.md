@@ -41,6 +41,8 @@ Generate secrets: `node -e "console.log(require('crypto').randomBytes(32).toStri
 ## 4. Front end on Vercel
 The client calls the API at the relative path `/api/v1`, so put both on **one origin** by rewriting `/api` to the API. This keeps the refresh cookie first-party and `SameSite=Strict`.
 
+Before deploying, edit `client/vercel.json` and replace `https://your-api.onrender.com` with the public HTTPS URL of the API service you created above. The example host is deliberately a placeholder; leaving it unchanged sends API requests to a nonexistent service.
+
 `client/vercel.json`:
 ```json
 {
@@ -56,8 +58,10 @@ The client calls the API at the relative path `/api/v1`, so put both on **one or
   ]}]
 }
 ```
-Vercel settings: root `client`, build `npm run build`, output `dist`.
+In Vercel, import this repository and set **Root Directory** to `client` (leave “Include files outside the root directory” off), **Framework Preset** to Vite, **Build Command** to `npm run build`, and **Output Directory** to `dist`. No frontend environment variables are required: API requests use the same-origin `/api` rewrite. Deploy after the API is live and the rewrite destination is updated.
 `'wasm-unsafe-eval'` is needed for Argon2id (WebAssembly). `Referrer-Policy: no-referrer` keeps share URLs out of referrers (the `#k=` fragment is never sent anyway).
+
+After deployment, open `https://<your-app>.vercel.app/api/v1/health`; it should return the API health JSON through the rewrite. Then load the app and check browser developer tools for failed API requests. Keep the Vercel origin in the API's `CLIENT_ORIGIN` value (including `https://`).
 
 ## 5. Seed (optional)
 `API_URL=https://your-app.vercel.app npm run seed` (from `server/`) creates the demo account — skip in real production.
